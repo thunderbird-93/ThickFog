@@ -59,10 +59,10 @@ public class Main {
       LOGGER.debug(Utils.bytesToHex(IV));
     }
 
-    Pipe p = new Pipe("C:/TD/gibberish.txt", "C:/TD/", key0, key1, IV);
+    /*Pipe p = new Pipe("C:/TD/gibberish.txt", "C:/TD/", key0, key1, IV);
     p.push();
 
-    if (true) return;
+    if (true) return;*/
 
     // -- Crypt String / Base62 example
     Crypto_AES_CBC c = new Crypto_AES_CBC(key0, IV);
@@ -76,10 +76,6 @@ public class Main {
       if (LOGGER.isErrorEnabled()) LOGGER.error("", e);
     }
 
-    if (LOGGER.isDebugEnabled()) {
-      LOGGER.debug(Utils.bytesToHex(Utils.getSecureRandom(Crypto.BLOCK_SIZE)));
-      LOGGER.debug(Utils.bytesToHex(Utils.getSecureRandom(Crypto.BLOCK_SIZE)));
-    }
 
     // -- XML file example (JAXB)
     try {
