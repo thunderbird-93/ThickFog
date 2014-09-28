@@ -16,7 +16,7 @@ import javax.xml.bind.JAXBContext;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
 
-/* TODO
+/* Bin List
 - increase bcrypt factor to 8
 - generate salt from picture
 */
@@ -59,6 +59,11 @@ public class Main {
       LOGGER.debug(Utils.bytesToHex(IV));
     }
 
+    Pipe p = new Pipe("C:/TD/gibberish.txt", "C:/TD/", key0, key1, IV);
+    p.push();
+
+    if (true) return;
+
     // -- Crypt String / Base62 example
     Crypto_AES_CBC c = new Crypto_AES_CBC(key0, IV);
     try {
@@ -75,8 +80,6 @@ public class Main {
       LOGGER.debug(Utils.bytesToHex(Utils.getSecureRandom(Crypto.BLOCK_SIZE)));
       LOGGER.debug(Utils.bytesToHex(Utils.getSecureRandom(Crypto.BLOCK_SIZE)));
     }
-
-    if (true) return;
 
     // -- XML file example (JAXB)
     try {
