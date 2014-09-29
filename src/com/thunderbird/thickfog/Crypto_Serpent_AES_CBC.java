@@ -22,14 +22,14 @@ public class Crypto_Serpent_AES_CBC extends Crypto {
   Cipher encryptCipher0 = null;
   Cipher decryptCipher0 = null;
 
-  public Crypto_Serpent_AES_CBC(byte[] pass, byte[] iv, byte[] pass0, byte[] iv0) {
-    super(pass, iv);
+  public Crypto_Serpent_AES_CBC(byte[] pass0, byte[] iv0, byte[] pass1, byte[] iv1) {
+    super(pass1, iv1);
 
     // get the key0 and the IV0 for Serpent
     key0 = new byte[pass0.length];
     System.arraycopy(pass0, 0, key0, 0, pass0.length);
     IV0 = new byte[BLOCK_SIZE];
-    System.arraycopy(iv0, 0, IV0, 0, iv0.length);
+    if (iv0 != null) System.arraycopy(iv0, 0, IV0, 0, iv0.length);
   }
 
   @Override

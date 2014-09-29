@@ -32,7 +32,7 @@ public abstract class Crypto {
     key = new byte[pass.length];
     System.arraycopy(pass, 0, key, 0, pass.length);
     IV = new byte[BLOCK_SIZE];
-    System.arraycopy(iv, 0, IV, 0, iv.length);
+    if (iv != null) System.arraycopy(iv, 0, IV, 0, iv.length);
   }
 
   public byte[] getKey() {
