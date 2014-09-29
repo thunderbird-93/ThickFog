@@ -6,13 +6,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.Field;
-import java.security.NoSuchAlgorithmException;
 import java.security.Permission;
 import java.security.PermissionCollection;
 import java.security.SecureRandom;
 import java.util.Map;
 
 public abstract class Utils {
+  final protected static char[] hexArray = "0123456789ABCDEF".toCharArray();
   final private static Logger LOGGER = LoggerFactory.getLogger(Utils.class);
   private static SecureRandom sr = null;
 
@@ -24,8 +24,7 @@ public abstract class Utils {
         buf = new byte[length];
         sr.nextBytes(buf);
       }
-    }
-    catch (Exception e) {
+    } catch (Exception e) {
       if (LOGGER.isErrorEnabled()) LOGGER.error("", e);
     }
     return buf;
@@ -38,13 +37,13 @@ public abstract class Utils {
       return;
     }
     try {
-        /*
-         * Do the following, but with reflection to bypass access checks:
-         *
-         * JceSecurity.isRestricted = false;
-         * JceSecurity.defaultPolicy.perms.clear();
-         * JceSecurity.defaultPolicy.add(CryptoAllPermission.INSTANCE);
-         */
+      /*
+       * Do the following, but with reflection to bypass access checks:
+       *
+       * JceSecurity.isRestricted = false;
+       * JceSecurity.defaultPolicy.perms.clear();
+       * JceSecurity.defaultPolicy.add(CryptoAllPermission.INSTANCE);
+       */
       final Class<?> jceSecurity = Class.forName("javax.crypto.JceSecurity");
       final Class<?> cryptoPermissions = Class.forName("javax.crypto.CryptoPermissions");
       final Class<?> cryptoAllPermission = Class.forName("javax.crypto.CryptoAllPermission");
@@ -66,8 +65,7 @@ public abstract class Utils {
       defaultPolicy.add((Permission) instance.get(null));
 
       if (LOGGER.isDebugEnabled()) LOGGER.debug("Successfully removed cryptography restrictions");
-    }
-    catch (final Exception e) {
+    } catch (final Exception e) {
       if (LOGGER.isErrorEnabled()) LOGGER.error(e.getLocalizedMessage(), e);
     }
   }
@@ -78,7 +76,6 @@ public abstract class Utils {
   }
 
   // -- Converts Byte Array to Hex string representation
-  final protected static char[] hexArray = "0123456789ABCDEF".toCharArray();
   public static String bytesToHex(byte[] bytes) {
     char[] hexChars = new char[bytes.length * 2];
     for (int j = 0; j < bytes.length; j++) {
@@ -95,13 +92,12 @@ public abstract class Utils {
     byte[] data = new byte[len / 2];
     for (int i = 0; i < len; i += 2) {
       data[i / 2] = (byte) ((Character.digit(s.charAt(i), 16) << 4)
-          + Character.digit(s.charAt(i+1), 16));
+          + Character.digit(s.charAt(i + 1), 16));
     }
     return data;
   }
 
-  public static String base62encode(byte[] data)
-  {
+  public static String base62encode(byte[] data) {
     String base64 = new String(Base64.encode(data));
     return base64ToBase62(base64);
   }
@@ -164,8 +160,7 @@ public abstract class Utils {
           default:
             throw new IllegalStateException("Illegal code in base62 encoding");
         }
-      }
-      else {
+      } else {
         buf.append(ch);
       }
       i++;

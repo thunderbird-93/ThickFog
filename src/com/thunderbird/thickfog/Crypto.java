@@ -23,9 +23,9 @@ public abstract class Crypto {
     decryptCipher = null;
   }
 
-  public abstract void initCiphers() throws NoSuchAlgorithmException, NoSuchProviderException, NoSuchPaddingException, InvalidKeyException, InvalidAlgorithmParameterException;
-  public abstract void encrypt(InputStream is, OutputStream os) throws IOException, ShortBufferException, IllegalBlockSizeException, BadPaddingException;
-  public abstract void decrypt(InputStream is, OutputStream os) throws IOException, ShortBufferException, IllegalBlockSizeException, BadPaddingException;
+  public abstract void initCiphers();
+  public abstract void encrypt(InputStream is, OutputStream os);
+  public abstract void decrypt(InputStream is, OutputStream os);
 
   protected Crypto(byte[] pass, byte[] iv) {
     // get the key and the IV
@@ -35,11 +35,19 @@ public abstract class Crypto {
     System.arraycopy(iv, 0, IV, 0, iv.length);
   }
 
+  public byte[] getKey() {
+    return key;
+  }
+
+  public void setKey(byte[] key) {
+    this.key = key;
+  }
+
   public byte[] getIV() {
     return IV;
   }
 
-  public void setIV(byte[] iv) {
-    System.arraycopy(iv, 0, IV, 0, iv.length);
+  public void setIV(byte[] IV) {
+    this.IV = IV;
   }
 }

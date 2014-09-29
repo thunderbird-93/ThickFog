@@ -7,8 +7,8 @@ import javax.xml.bind.annotation.XmlRootElement;
 public class ChunkManifest {
   private String name;
   private long size;
-  private byte[] checkSum = new byte[512/8];
-  private byte[] encCheckSum = new byte[512/8];
+  private byte[] checkSum = new byte[Crypto.BLOCK_SIZE * 4];      // SHA-512
+  private byte[] encCheckSum = new byte[Crypto.BLOCK_SIZE * 4];   // SHA-512
 
   @XmlAttribute
   public String getName() {

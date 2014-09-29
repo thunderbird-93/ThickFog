@@ -8,7 +8,7 @@ import java.util.ArrayList;
 public class FileManifest {
   private String name;
   private long size;
-  private byte[] checkSum = new byte[512/8];    // SHA-512
+  private byte[] checkSum = new byte[Crypto.BLOCK_SIZE * 4];    // SHA-512
   private byte[] IV0 = new byte[Crypto.BLOCK_SIZE];
   private byte[] IV1 = new byte[Crypto.BLOCK_SIZE];
   private ArrayList<ChunkManifest> chunks;

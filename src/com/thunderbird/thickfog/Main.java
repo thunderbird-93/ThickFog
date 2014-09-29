@@ -16,9 +16,9 @@ import javax.xml.bind.JAXBContext;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
 
-/* Bin List
-- increase bcrypt factor to 8
-- generate salt from picture
+/*
+TODO - increase bcrypt factor to 8
+TODO - generate salt from picture
 */
 
 public class Main {
@@ -59,10 +59,10 @@ public class Main {
       LOGGER.debug(Utils.bytesToHex(IV));
     }
 
-    /*Pipe p = new Pipe("C:/TD/gibberish.txt", "C:/TD/", key0, key1, IV);
+    Pipe p = new Pipe("C:/TD/gibberish.txt", "C:/TD/", key0, key1, IV);
     p.push();
 
-    if (true) return;*/
+    if (true) return;
 
     // -- Crypt String / Base62 example
     Crypto_AES_CBC c = new Crypto_AES_CBC(key0, IV);
@@ -71,11 +71,9 @@ public class Main {
       String s = c.encrypt("Hello you lazy bastards Base62");
       if (LOGGER.isDebugEnabled()) LOGGER.debug(s);
       if (LOGGER.isDebugEnabled()) LOGGER.debug(c.decrypt(s));
-    }
-    catch (Exception e) {
+    } catch (Exception e) {
       if (LOGGER.isErrorEnabled()) LOGGER.error("", e);
     }
-
 
     // -- XML file example (JAXB)
     try {
@@ -127,8 +125,7 @@ public class Main {
         System.out.println("Chunk: " + cm.getName() + " size: "
             + cm.getSize());
       }
-    }
-    catch (Exception e) {
+    } catch (Exception e) {
       if (LOGGER.isErrorEnabled()) LOGGER.error("", e);
     }
 
@@ -148,8 +145,7 @@ public class Main {
       c1.encrypt(fis, fos);
       fis.close();
       fos.close();
-    }
-    catch (Exception e) {
+    } catch (Exception e) {
       if (LOGGER.isErrorEnabled()) LOGGER.error("", e);
     }
 
@@ -161,21 +157,7 @@ public class Main {
       c1.encrypt(fis, fos);
       fis.close();
       fos.close();
-    }
-    catch (Exception e) {
-      if (LOGGER.isErrorEnabled()) LOGGER.error("", e);
-    }
-
-    // CBC Decrypt
-    try {
-      c.initCiphers();
-      fis = new FileInputStream("C:/TD/gbr_out.txt");
-      fos = new FileOutputStream("C:/TD/gbr.txt");
-      c.decrypt(fis, fos);
-      fis.close();
-      fos.close();
-    }
-    catch (Exception e) {
+    } catch (Exception e) {
       if (LOGGER.isErrorEnabled()) LOGGER.error("", e);
     }
 
@@ -187,8 +169,7 @@ public class Main {
       c.decrypt(fis, fos);
       fis.close();
       fos.close();
-    }
-    catch (Exception e) {
+    } catch (Exception e) {
       if (LOGGER.isErrorEnabled()) LOGGER.error("", e);
     }
 
@@ -236,16 +217,14 @@ public class Main {
         bos.close();
         i++;
       }
-    }
-    catch (Exception e) {
+    } catch (Exception e) {
       if (LOGGER.isErrorEnabled()) LOGGER.error("", e);
     }
     finally {
       if (bis != null) {
         try {
           bis.close();
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
           if (LOGGER.isErrorEnabled()) LOGGER.error("", e);
         }
       }
