@@ -6,14 +6,12 @@ import org.slf4j.LoggerFactory;
 import javax.crypto.BadPaddingException;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.ShortBufferException;
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Marshaller;
-import javax.xml.bind.PropertyException;
+import javax.xml.bind.*;
 import java.io.*;
 import java.nio.file.Path;
 import java.security.MessageDigest;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 public class Pipe {
   final private static Logger LOGGER = LoggerFactory.getLogger(Pipe.class);
@@ -41,8 +39,6 @@ public class Pipe {
 
     // -- create manifest and do basic initialisation
     manifest = new FileManifest();
-    manifest.setName(this.originalFile.getName());
-    manifest.setSize(this.originalFile.length());
     manifest.setChunks(new ArrayList<ChunkManifest>());
 
     try {
@@ -66,6 +62,8 @@ public class Pipe {
         LOGGER.debug("Opening: " + originalFile);
         LOGGER.debug("Size: " + originalFile.length() / (1024 * 1024) + "MB");
       }
+      manifest.setName(this.originalFile.getName());
+      manifest.setSize(this.originalFile.length());
 
       // -- Split file into chunks, calculate hashes & update manifest accordingly
       if (originalFile.length() > 0) {
@@ -159,6 +157,89 @@ public class Pipe {
     }
   }
 
+  // -- Read manifest, decrypt chunks and combine into original file
+  public void pull() {
+    BufferedInputStream bis = null;
+    BufferedOutputStream bos = null;
+    byte [] buf = null;
+
+    try {
+      // read manifest file, decrypt and load it into manifest instance
+      bis = new BufferedInputStream(new FileInputStream(encryptedPath.getPath()
+          + encryptedPath.separator + lightCipher.encrypt(originalFile.getName() + MANIFEST_EXT)));
+      ByteArrayOutputStream ba_os = new ByteArrayOutputStream();
+      lightCipher.decrypt(bis, ba_os);
+      bis.close();
+      ByteArrayInputStream ba_is = new ByteArrayInputStream(ba_os.toByteArray());
+
+
+      JAXBContext context = JAXBContext.newInstance(FileManifest.class);
+      Unmarshaller um = context.createUnmarshaller();
+      manifest = (FileManifest) um.unmarshal(ba_is);
+
+      // init checksum calculators, IVs & open output file
+      MessageDigest originalFileDigest = MessageDigest.getInstance("SHA-512", "BC");
+      originalFileDigest.reset();
+      MessageDigest chunkDigest = MessageDigest.getInstance("SHA-512", "BC");
+      setIVs(manifest.getIV0(), manifest.getIV1());
+      bos = new BufferedOutputStream(new BufferedOutputStream(
+          new FileOutputStream(originalFile)));
+
+      // read chunks
+      for (ChunkManifest cm : manifest.getChunks()) {
+        if (LOGGER.isDebugEnabled()) LOGGER.debug(cm.getName());
+        bis = new BufferedInputStream(new FileInputStream(encryptedPath.getPath()
+            + encryptedPath.separator + lightCipher.encrypt(cm.getName())));
+        // adjust buffer size if needed & read whole chunk
+        if ((buf == null) || (buf.length != bis.available())) {
+          assert bis.available() <= CHUNK_SIZE : "File chunk is too big";
+          buf = new byte[bis.available()];
+        }
+        int bytesRead = bis.read(buf);
+        bis.close();
+        assert bytesRead == buf.length : "Chunk read error, size mismatch";
+
+        // compare encrypted checksum
+        chunkDigest.reset();
+        chunkDigest.update(buf);
+        assert Arrays.equals(chunkDigest.digest(), cm.getEncCheckSum()) : "Encrypted chunk data integrity error";
+        if (LOGGER.isDebugEnabled()) LOGGER.debug("Decrypted CheckSum - OK");
+
+        // decrypt
+        ba_is = new ByteArrayInputStream(buf);
+        ba_os = new ByteArrayOutputStream();
+        heavyChipher.decrypt(ba_is, ba_os);
+        buf = ba_os.toByteArray();
+
+        // compare decrypted checksum & continue to checksum whole decrypted file
+        chunkDigest.reset();
+        chunkDigest.update(buf);
+        assert Arrays.equals(chunkDigest.digest(), cm.getCheckSum()) : "Decrypted chunk data integrity error";
+        if (LOGGER.isDebugEnabled()) LOGGER.debug("Encrypted CheckSum - OK");
+        originalFileDigest.update(buf);
+
+        // write decrypted chunk to original file
+        bos.write(buf);
+      }
+
+      // compare whole decrypted file checksum & size
+      assert originalFile.length() == manifest.getSize() : "Decrypted file size mismatch";
+      if (LOGGER.isDebugEnabled()) LOGGER.debug(manifest.getName() + ": Size - OK");
+      assert Arrays.equals(originalFileDigest.digest(), manifest.getCheckSum()) : "Decrypted file data integrity error";
+      if (LOGGER.isDebugEnabled()) LOGGER.debug(manifest.getName() + ": CheckSum - OK");
+    } catch (Exception e) {
+      if (LOGGER.isErrorEnabled()) LOGGER.error("", e);
+    }
+    finally {
+      try {
+        if (bis != null) bis.close();
+        if (bos != null) bis.close();
+      } catch (Exception e) {
+        if (LOGGER.isErrorEnabled()) LOGGER.error("", e);
+      }
+    }
+  }
+
   private void writeManifest() {
     BufferedOutputStream bos = null;
 
@@ -203,6 +284,7 @@ public class Pipe {
     heavyChipher.setIV(iv1);
     heavyChipher.initCiphers();
   }
+
 
   public File getOriginalFile() {
     return originalFile;

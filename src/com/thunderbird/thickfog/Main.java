@@ -60,8 +60,9 @@ public class Main {
       LOGGER.debug(Utils.bytesToHex(IV));
     }
 
-    Pipe p = new Pipe("C:/TD/zero.txt", "C:/TD/", key0, key1, IV);
-    p.push();
+    Pipe p = new Pipe("C:/TD/gibberish.txt", "C:/TD/ENC", key0, key1, IV);
+    // p.push();
+    p.pull();
 
     if (true) return;
 
