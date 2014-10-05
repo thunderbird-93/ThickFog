@@ -61,8 +61,8 @@ public class Main {
     }
 
     Pipe p = new Pipe("C:/TD/gibberish.txt", "C:/TD/ENC", key0, key1, IV);
-    // p.push();
-    p.pull();
+    p.push();
+    // p.pull();
 
     if (true) return;
 

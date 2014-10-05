@@ -10,6 +10,7 @@ import javax.xml.bind.*;
 import java.io.*;
 import java.nio.file.Path;
 import java.security.MessageDigest;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 
@@ -61,9 +62,12 @@ public class Pipe {
       if (LOGGER.isDebugEnabled()) {
         LOGGER.debug("Opening: " + originalFile);
         LOGGER.debug("Size: " + originalFile.length() / (1024 * 1024) + "MB");
+        LOGGER.debug("Last Modified: " +
+            (new SimpleDateFormat("dd.MM.yyyy HH:mm:ss")).format(originalFile.lastModified()));
       }
       manifest.setName(this.originalFile.getName());
       manifest.setSize(this.originalFile.length());
+      manifest.setLastModified(this.originalFile.lastModified());
 
       // -- Split file into chunks, calculate hashes & update manifest accordingly
       if (originalFile.length() > 0) {
