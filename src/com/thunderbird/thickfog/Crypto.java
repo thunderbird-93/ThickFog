@@ -2,15 +2,13 @@ package com.thunderbird.thickfog;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import javax.crypto.*;
-import java.io.IOException;
+
+import javax.crypto.Cipher;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.security.*;
 
 // -- Base ancestor for all encryption classes
 public abstract class Crypto {
-  final private static Logger LOGGER = LoggerFactory.getLogger(Utils.class);
   public static int BLOCK_SIZE = 16;    // The default block size
   byte[] key = null;                    // The key
   byte[] IV = null;                     // The initialization vector needed by the CBC mode

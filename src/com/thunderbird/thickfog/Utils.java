@@ -16,6 +16,11 @@ public abstract class Utils {
   final private static Logger LOGGER = LoggerFactory.getLogger(Utils.class);
   private static SecureRandom sr = null;
 
+  /**
+   * Generate SecureRandom byte array
+   * @param length of data returned
+   * @return byte array with random data
+   */
   public static byte[] getSecureRandom(int length) {
     byte[] buf = null;
     try {
@@ -30,7 +35,9 @@ public abstract class Utils {
     return buf;
   }
 
-  // -- Removes Java cryptographic restriction, (specifically on key length)
+  /**
+   * Removes Java cryptographic restriction, (specifically on key length)
+   */
   public static void removeCryptographyRestrictions() {
     if (!isRestrictedCryptography()) {
       if (LOGGER.isDebugEnabled()) LOGGER.debug("Cryptography restrictions removal not needed");
@@ -75,7 +82,11 @@ public abstract class Utils {
     return "Java(TM) SE Runtime Environment".equals(System.getProperty("java.runtime.name"));
   }
 
-  // -- Converts Byte Array to Hex string representation
+  /**
+   * Converts Byte Array to Hex string representation
+   * @param bytes - source byte array
+   * @return - string with hex representation of byte array
+   */
   public static String bytesToHex(byte[] bytes) {
     char[] hexChars = new char[bytes.length * 2];
     for (int j = 0; j < bytes.length; j++) {
@@ -86,7 +97,11 @@ public abstract class Utils {
     return new String(hexChars);
   }
 
-  // -- Converts Hex string to Byte Array
+  /**
+   * Converts Hex string to Byte Array
+   * @param s - string containing hex data representation to convert
+   * @return - byte array containing hex data
+   */
   public static byte[] hexToBytes(String s) {
     int len = s.length();
     byte[] data = new byte[len / 2];
@@ -98,7 +113,7 @@ public abstract class Utils {
   }
 
   public static String base62encode(byte[] data) {
-    String base64 = new String(Base64.encode(data));
+    String base64 = Base64.encode(data);
     return base64ToBase62(base64);
   }
 
@@ -107,8 +122,13 @@ public abstract class Utils {
     return Base64.decode(base64);
   }
 
+  /**
+   * Convert Base64 to Base62 so it's filename safe
+   * @param base64 - input Base64 string
+   * @return - resulting Base62 string
+   */
   private static String base64ToBase62(String base64) {
-    StringBuffer buf = new StringBuffer(base64.length() * 2);
+    StringBuilder buf = new StringBuilder(base64.length() * 2);
 
     for (int i = 0; i < base64.length(); i++) {
       char ch = base64.charAt(i);
@@ -134,8 +154,13 @@ public abstract class Utils {
     return buf.toString();
   }
 
+  /**
+   * Convert Base62 to Base64
+   * @param base62 - input Base62 string
+   * @return - resulting Base64 string
+   */
   private static String base62ToBase64(String base62) {
-    StringBuffer buf = new StringBuffer(base62.length());
+    StringBuilder buf = new StringBuilder(base62.length());
 
     int i = 0;
     while (i < base62.length()) {

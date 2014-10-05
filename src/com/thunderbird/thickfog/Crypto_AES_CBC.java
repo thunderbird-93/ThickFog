@@ -2,6 +2,7 @@ package com.thunderbird.thickfog;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 import javax.crypto.Cipher;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.IvParameterSpec;
@@ -33,7 +34,7 @@ public class Crypto_AES_CBC extends Crypto {
       decryptCipher = Cipher.getInstance("AES/CBC/PKCS7Padding", "BC");
       decryptCipher.init(Cipher.DECRYPT_MODE, keyValue, IVspec);
     } catch (Exception e) {
-      if (LOGGER.isErrorEnabled()) LOGGER.error("", e);;
+      if (LOGGER.isErrorEnabled()) LOGGER.error("", e);
     }
   }
 
@@ -42,8 +43,8 @@ public class Crypto_AES_CBC extends Crypto {
     try {
       byte[] buffer = new byte[BLOCK_SIZE];
       byte[] cipherBlock = new byte[encryptCipher.getOutputSize(buffer.length)];
-      int cipherBytes = 0;
-      int noBytes = 0;
+      int cipherBytes;
+      int noBytes;
 
       while((noBytes = is.read(buffer))!=-1) {
         cipherBytes = encryptCipher.update(buffer, 0, noBytes, cipherBlock);
@@ -62,8 +63,8 @@ public class Crypto_AES_CBC extends Crypto {
     try {
       byte[] buffer = new byte[BLOCK_SIZE];
       byte[] cipherBlock = new byte[decryptCipher.getOutputSize(buffer.length)];
-      int cipherBytes = 0;
-      int noBytes = 0;
+      int cipherBytes;
+      int noBytes;
 
       while((noBytes = is.read(buffer))!=-1)
       {
@@ -81,23 +82,25 @@ public class Crypto_AES_CBC extends Crypto {
   // -- Encrypt string and return Hex representation to avoid charset troubles
   public String encrypt(String s) {
     ByteArrayInputStream ba_in;
-    ByteArrayOutputStream ba_out = null;
+    ByteArrayOutputStream ba_out;
+    String res = null;
 
     try {
       ba_in = new ByteArrayInputStream(s.getBytes("UTF-8"));
       ba_out = new ByteArrayOutputStream();
       encrypt(ba_in, ba_out);
+      res = Utils.base62encode(ba_out.toByteArray());
     } catch (Exception e) {
       if (LOGGER.isErrorEnabled()) LOGGER.error("", e);
-    } finally {
-      return Utils.base62encode(ba_out.toByteArray());
     }
+
+    return res;
   }
 
   // -- Encrypt Hex representation string
   public String decrypt(String s) {
     ByteArrayInputStream ba_in;
-    ByteArrayOutputStream ba_out = null;
+    ByteArrayOutputStream ba_out;
     String res = null;
 
     try {
@@ -107,8 +110,9 @@ public class Crypto_AES_CBC extends Crypto {
       res = ba_out.toString("UTF-8");
     } catch (Exception e) {
       if (LOGGER.isErrorEnabled()) LOGGER.error("", e);
-    } finally {
-      return res;
+
     }
+
+    return res;
   }
 }

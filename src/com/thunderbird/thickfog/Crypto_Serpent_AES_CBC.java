@@ -3,14 +3,14 @@ package com.thunderbird.thickfog;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.crypto.*;
+import javax.crypto.Cipher;
+import javax.crypto.SecretKey;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
-import java.io.*;
-import java.security.InvalidAlgorithmParameterException;
-import java.security.InvalidKeyException;
-import java.security.NoSuchAlgorithmException;
-import java.security.NoSuchProviderException;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.security.spec.AlgorithmParameterSpec;
 
 // -- CBC encryption class, use for files content
@@ -62,7 +62,7 @@ public class Crypto_Serpent_AES_CBC extends Crypto {
       decryptCipher = Cipher.getInstance("AES/CBC/PKCS7Padding", "BC");
       decryptCipher.init(Cipher.DECRYPT_MODE, keyValue, IVspec);
     } catch (Exception e) {
-      if (log.isErrorEnabled()) log.error("", e);;
+      if (log.isErrorEnabled()) log.error("", e);
     }
   }
 
@@ -73,7 +73,7 @@ public class Crypto_Serpent_AES_CBC extends Crypto {
 
     try {
       byte[] buffer = new byte[BLOCK_SIZE];
-      int noBytes = 0;
+      int noBytes;
       byte[] cipherBlock = new byte[encryptCipher0.getOutputSize(buffer.length)];       // Serpent and AES should have same block size
       int cipherBytes;
 
@@ -109,7 +109,7 @@ public class Crypto_Serpent_AES_CBC extends Crypto {
     try {
       byte[] buffer = new byte[BLOCK_SIZE];
       byte[] cipherBlock = new byte[decryptCipher0.getOutputSize(buffer.length)];   // Serpent and AES should have same block size
-      int cipherBytes = 0;
+      int cipherBytes;
       int noBytes;
 
       // -- Decrypt AES and store result in temp stream
